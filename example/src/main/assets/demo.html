@@ -16,10 +16,10 @@
             </xmp>
         </p>
         <p>
-            <input type="text" id="text1" value="用户名(username)" />
+            <input type="text" id="text1" value="yzw" />
         </p>
         <p>
-            <input type="text" id="text2" value="password" />
+            <input type="text" id="text2" value="123456" />
         </p>
         <p>
             <input type="button" id="enter" value="发消息给Native" onclick="testClick();"
@@ -59,11 +59,11 @@
         function testClick1() {
             var str1 = document.getElementById("text1").value;
             var str2 = document.getElementById("text2").value;
-
+            var data = {username: str1,password:str2};
             //call native method
-            window.WebViewJavascriptBridge.callHandler(
+            window.WebViewJavascriptBridge.callNativeMethod(
                 'submitFromWeb'
-                , {'param': str1}
+                , data
                 , function(responseData) {
                     document.getElementById("show").innerHTML = "send get responseData from java, data = " + responseData
                 }

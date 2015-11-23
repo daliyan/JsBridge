@@ -116,6 +116,7 @@ public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
 				for (Message m : startupMessage) {
 					dispatchMessage(m);
 				}
+                //在页面加载完成后需要重置为NULL，否则不能调用JS方法,请看queueMessage(message)
 				startupMessage = null;
 			}
 		}
@@ -165,8 +166,9 @@ public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
         //escape special characters for json string
         messageJson = messageJson.replaceAll("(\\\\)([^utrn])", "\\\\\\\\$1$2");
         messageJson = messageJson.replaceAll("(?<=[^\\\\])(\")", "\\\\\"");
+        //执行 javascript:WebViewJavascriptBridge._handleMessageFromNative('%s');方法
         String javascriptCommand = String.format(BridgeUtil.JS_HANDLE_MESSAGE_FROM_JAVA, messageJson);
-        if (Thread.currentThread() == Looper.getMainLooper().getThread()) {
+        if (Thread.currentThread() == Looper.getMainLooper().getThread()) {//只有执行到主线程才执行命令
             this.loadUrl(javascriptCommand);
         }
     }
@@ -244,7 +246,7 @@ public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
 	 * @param handlerName
 	 * @param handler
 	 */
-	public void registerHandler(String handlerName, BridgeHandler handler) {
+	public void registerNativeMethod(String handlerName, BridgeHandler handler) {
 		if (handler != null) {
 			messageHandlers.put(handlerName, handler);
 		}
@@ -257,7 +259,7 @@ public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
 	 * @param data
 	 * @param callBack
 	 */
-	public void callHandler(String handlerName, String data, CallBackFunction callBack) {
+	public void callJsMethod(String handlerName, String data, CallBackFunction callBack) {
         doSend(handlerName, data, callBack);
 	}
 }

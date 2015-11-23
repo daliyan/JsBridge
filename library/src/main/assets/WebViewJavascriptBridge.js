@@ -64,7 +64,7 @@
         messageHandlers[handlerName] = handler;
     }
 
-    function callHandler(handlerName, data, responseCallback) {
+    function callNativeMethod(handlerName, data, responseCallback) {
         _doSend({
             handlerName: handlerName,
             data: data
@@ -104,7 +104,7 @@
             //java call finished, now need to call js callback function
             if (message.responseId) {
                 responseCallback = responseCallbacks[message.responseId];
-                if (!responseCallback) {
+                if (!responseCallback) {//判断查询队列中是否注册过该JS方法
                     return;
                 }
                 responseCallback(message.responseData);
@@ -137,7 +137,7 @@
         });
     }
 
-    //提供给native调用,receiveMessageQueue 在会在页面加载完后赋值为null,所以
+    //提供给native调用,receiveMessageQueue 在会在页面加载完后赋值为null
     function _handleMessageFromNative(messageJSON) {
         if (receiveMessageQueue) {
             receiveMessageQueue.push(messageJSON);
@@ -150,7 +150,7 @@
         init: init,
         send: send,
         registerHandler: registerHandler,
-        callHandler: callHandler,
+        callNativeMethod: callNativeMethod,
         _fetchQueue: _fetchQueue,
         _handleMessageFromNative: _handleMessageFromNative
     };

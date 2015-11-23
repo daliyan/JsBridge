@@ -10,6 +10,7 @@ import android.view.View.OnClickListener;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.github.lzyzsd.jsbridge.BridgeHandler;
 import com.github.lzyzsd.jsbridge.BridgeWebView;
@@ -72,15 +73,16 @@ public class MainActivity extends Activity implements OnClickListener {
 
 		webView.loadUrl("file:///android_asset/demo.html");
 
-		webView.registerHandler("submitFromWeb", new BridgeHandler() {
+		webView.registerNativeMethod("submitFromWeb", new BridgeHandler() {
 
-			@Override
-			public void handler(String data, CallBackFunction function) {
-				Log.i(TAG, "handler = submitFromWeb, data from web = " + data);
-                function.onCallBack("submitFromWeb exe, response data from Java");
-			}
+            @Override
+            public void handler(String data, CallBackFunction function) {
+                Log.i(TAG, "handler = submitFromWeb, data from web = " + data);
+                Toast.makeText(MainActivity.this, "你调用了我的原生方法，你给我传的参数是：" + data, Toast.LENGTH_LONG).show();
+                function.onCallBack("android给你传了一个回调数据给你:哈哈");
+            }
 
-		});
+        });
 
         User user = new User();
         Location location = new Location();
@@ -88,10 +90,10 @@ public class MainActivity extends Activity implements OnClickListener {
         user.location = location;
         user.name = "Bruce";
 
-        webView.callHandler("functionInJs", new Gson().toJson(user), new CallBackFunction() {
+        webView.callJsMethod("functionInJs", new Gson().toJson(user), new CallBackFunction() {
             @Override
             public void onCallBack(String data) {
-
+                Toast.makeText(MainActivity.this, data, Toast.LENGTH_LONG).show();
             }
         });
 
@@ -120,15 +122,14 @@ public class MainActivity extends Activity implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		if (button.equals(v)) {
-            webView.callHandler("functionInJs", "data from Java", new CallBackFunction() {
+            webView.callJsMethod("functionInJs", "data from Java", new CallBackFunction() {
 
-				@Override
-				public void onCallBack(String data) {
-					// TODO Auto-generated method stub
-					Log.i(TAG, "reponse data from js " + data);
-				}
+                @Override
+                public void onCallBack(String data) {
+                    Toast.makeText(MainActivity.this, data, Toast.LENGTH_LONG).show();
+                }
 
-			});
+            });
 		}
 
 	}
